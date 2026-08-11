@@ -1,0 +1,519 @@
+\documentclass[twoside]{article}
+
+\usepackage[preprint]{aistats2027}
+\usepackage[round,authoryear]{natbib}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{url}
+
+\renewcommand{\bibname}{References}
+\renewcommand{\bibsection}{\subsubsection*{\bibname}}
+\bibliographystyle{apalike}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\renewcommand{\thetheorem}{S\arabic{theorem}}
+\newcommand{\R}{\mathbb R}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\prox}{\operatorname{prox}}
+\newcommand{\supp}{\operatorname{supp}}
+
+\begin{document}
+\runningauthor{}
+
+\twocolumn[
+\aistatstitle{Supplement to ``No Randomized Speedup for Weakly Convex Optimization''}
+\aistatsauthor{Pahan Dewasurendra}
+\aistatsaddress{Johns Hopkins University}
+]
+
+\appendix
+
+\section{The Dead-Zone Chain}
+\label{app:chain}
+
+We use all definitions from Section~3 of the main paper. Let
+$q_0(t)=0$ for $t\leq0$, $q_0(t)=3t^2-2t^3$ for $0<t<1$, and $q_0(t)=1$
+for $t\geq1$. Thus $q_a(t)=q_0((t-a)/(1-a))$ with $a=1/16$.
+
+\begin{lemma}[Smoothstep constants]
+\label{lem:q}
+The function $q_a$ is continuously differentiable, nondecreasing, and takes
+values in $[0,1]$. Moreover,
+\[
+ 0\leq q_a'\leq\frac85,\qquad
+ \operatorname{Lip}(q_a')\leq\frac{512}{75},\qquad
+ q_a(t)\leq\frac{256}{75}t_+^2.
+\]
+For $\psi(u)=N^{-1}\sum_jq_a(Nu_j/4)$,
+\[
+ \|\nabla\psi(u)\|\leq\frac25\sqrt N,
+ \qquad \operatorname{Lip}(\nabla\psi)\leq\frac{32}{75}N.
+\]
+\end{lemma}
+
+\begin{proof}
+On $(0,1)$, $q_0'(t)=6t(1-t)$ and $q_0''(t)=6-12t$. Hence
+$\max q_0'=3/2$ and $\operatorname{Lip}(q_0')=6$. Affine rescaling by
+$1-a=15/16$ gives the first two constants. Since
+$q_0(s)\leq3s_+^2$ and
+$((t-a)/(1-a))_+\leq t_+/(1-a)$, the quadratic bound follows. The two
+bounds on $\psi$ follow by the chain rule.
+\end{proof}
+
+For $W=\{w\in\R_+^M:\|w\|\leq1\}$ and $w_{M+1}=0$, the support-function
+identity gives
+\begin{align}
+ \bar f(z)&=\max_{w\in W}F_w(z),\nonumber\\
+ F_w(z)&=C(w)+\frac2N\sum_{m=1}^Mw_m\phi(z^m)\nonumber\\
+ &\quad-\frac2N\sum_{m=1}^M(1-w_{m+1})\psi(z^m).
+ \label{eq:variational}
+\end{align}
+
+\begin{lemma}[Analytic certificates]
+\label{lem:analytic}
+The function $\bar f$ is one-Lipschitz, one-weakly convex, finite-valued,
+and bounded below. Its initial gap is at most $3M/N$.
+\end{lemma}
+
+\begin{proof}
+Each $\phi$ is convex and $N/8$-Lipschitz. By
+Lemma~\ref{lem:q}, the negative progress part in \eqref{eq:variational} has
+weak-convexity modulus at most
+\[
+ \frac2N\frac{32N}{75}=\frac{64}{75}<1.
+\]
+The blocks are disjoint and the pointwise maximum preserves a common
+weak-convexity modulus. The tilted part has Lipschitz constant at most
+$\|w\|/4\leq1/4$. The progress part has gradient norm at most
+\[
+ \frac2N\sqrt{M\frac{4N}{25}}
+ =\frac45\sqrt{\frac MN}\leq\frac4{5\sqrt{12}}.
+\]
+Their sum is below one.
+
+The first term in the direct definition of $\bar f$ is nonnegative and every
+$\psi$ lies in $[0,1]$. Thus $\bar f\geq-2M/N$. At zero, only the first phase
+is positive and $\bar f(0)<2/N$. Since $M\geq2$, the initial gap is below
+$2(M+1)/N\leq3M/N$.
+\end{proof}
+
+\begin{lemma}[Exact robust locality]
+\label{lem:locality}
+Let $\tau=1/(64N^2)$. If $|z_{m,j}|<\tau$ for every coordinate with
+$\ell(m,j)>t$, then there is a neighborhood $\mathcal N$ of $z$ such that
+\[
+ \bar f(y)=\bar f(P_{t+1}y),\qquad y\in\mathcal N.
+\]
+\end{lemma}
+
+\begin{proof}
+Write
+\[
+ k_m=\min\{N,\max\{0,t-(m-1)L+1\}\}.
+\]
+Coordinates $j>k_m$ are more than level $t$ and have magnitude below
+$\tau$. Since
+$(N/4)\tau<1/16=a$, the function $q_a(Nu/4)$ is identically zero on a
+neighborhood of each such coordinate. Hence every progress term locally
+depends only on indices at most $k_m$.
+
+Suppose $1\leq k_m<N$. For $j\geq k_m+2$, compare hidden affine facets:
+\begin{align*}
+ &\left(c_{k_m+1}-\frac N8z^m_{k_m+1}\right)
+ -\left(c_j-\frac N8z^m_j\right)\\
+ &\qquad\geq \frac1{16N}-\frac{N\tau}{4}
+ =\frac{15}{256N}>0.
+\end{align*}
+Thus only facet $k_m+1$ can be active among hidden facets, and the strict
+margin persists locally. The fan $\phi(z^m)$ depends only on indices at most
+$k_m+1$.
+
+Now suppose $k_m=0$ and $m\geq2$. Then $k_{m-1}\leq L$. Hidden progress
+coordinates contribute zero, so $\psi(z^{m-1})\leq L/N\leq3/16$. Also
+$\phi(z^m)\leq c_1+N\tau/8$. Therefore
+\[
+ \sigma_m(z)\leq-\frac1{16N}+\frac{N\tau}{8}
+ =-\frac{31}{512N}<0.
+\]
+The score remains negative locally, so the positive-part norm does not depend
+on block $m$. Its negative progress term is locally constant. If $m=1$, then
+$t=-1$. The first facet is uniquely largest, by the same strict facet
+comparison, and it belongs to level zero.
+
+Fully revealed blocks already lie in $V_t$. Combining the cases shows that
+every term in $\bar f$ is locally independent of coordinates beyond
+$V_{t+1}$, which proves the identity.
+\end{proof}
+
+\begin{lemma}[Phase and sign certificate]
+\label{lem:phase}
+Let $b=q_a(3/4)=2783/3375$. If $\psi(z^M)<b$, then
+$R(z)=\|[\sigma(z)]_+\|>0$. If $R(z)>0$, every
+$g\in\partial\bar f(z)$ is coordinatewise nonpositive,
+$\|g\|\geq1/(4\sqrt N)$, and
+\[
+ g^m_j<0,\ z^m_j>0\quad\Longrightarrow\quad z^m_j<\frac{13}{2N}.
+ \label{eq:support-bound}
+\]
+\end{lemma}
+
+\begin{proof}
+Set $p_0=1$ and $p_m=\psi(z^m)$. Let $\widehat m$ be the first index with
+$p_{\widehat m}<b$. Then $p_{\widehat m-1}\geq b$. Since $q_a$ is
+nondecreasing, $p_{\widehat m}<q_a(3/4)$ implies that
+$Nz^{\widehat m}_j/4<3/4$ for some $j$. Since $c_j\geq1$,
+\[
+ \phi(z^{\widehat m})>1-\frac38=\frac58.
+\]
+It follows that
+$\sigma_{\widehat m}(z)>5/8+b-5/4=b-5/8>0$, proving $R(z)>0$.
+
+When $R(z)>0$, the maximizing weight in \eqref{eq:variational} is unique:
+\[
+ w_m=\frac{[\sigma_m(z)]_+}{R(z)},\qquad \sum_mw_m^2=1.
+\]
+Every subgradient has blocks
+\begin{align*}
+ g^m&=\frac2N\left(w_mu_m
+ -(1-w_{m+1})\nabla\psi(z^m)\right),\\
+ &\hspace{34mm}u_m\in\partial\phi(z^m).
+\end{align*}
+If $w_m>0$, then $\sigma_m>0$ and
+$\phi(z^m)>5/4-\psi(z^{m-1})\geq1/4$. The zero branch of $\phi$ is
+inactive. Consequently, $u_m\leq0$ coordinatewise and
+$\|u_m\|_1=N/8$, which gives $\|u_m\|\geq\sqrt N/8$.
+The progress gradient is nonnegative. Both terms in $g^m$ are therefore
+nonpositive and cannot cancel. Hence
+\[
+ \|g^m\|\geq\frac{w_m}{4\sqrt N},\qquad
+ \|g\|^2\geq\frac1{16N}\sum_mw_m^2=\frac1{16N}.
+\]
+
+If $g^m_j<0$, either an active affine facet contributes or
+$[\nabla\psi(z^m)]_j>0$. In the first case, its value is above $1/4$, so
+\[
+ c_j-\frac N8z^m_j>\frac14
+ \quad\Longrightarrow\quad
+ z^m_j<\frac8N\left(\frac{17}{16}-\frac14\right)
+ =\frac{13}{2N}.
+\]
+In the second case, $Nz^m_j/4<1$, so $z^m_j<4/N$. This proves
+\eqref{eq:support-bound}.
+\end{proof}
+
+Lemmas~\ref{lem:analytic}, \ref{lem:locality}, and \ref{lem:phase} prove
+the robust-chain proposition in the main paper.
+
+\section{Soft-Projection Calculus}
+\label{app:wrapper}
+
+Define $s_S(x)=\alpha(x)x$ with
+$\alpha(x)=(1+\|x\|^2/S^2)^{-1/2}$.
+
+\begin{lemma}[Soft projection]
+\label{lem:soft}
+The map $s_S$ has norm below $S$, is one-Lipschitz, and its Jacobian is
+$6/S$-Lipschitz in operator norm. If $h$ is one-Lipschitz and
+one-weakly convex, then $h\circ U^\top s_S$ is
+$(1+6/S)$-weakly convex for every column-orthonormal $U$.
+\end{lemma}
+
+\begin{proof}
+Direct differentiation gives
+\[
+ J_s(x)=\alpha I-\frac{\alpha^3}{S^2}xx^\top.
+\]
+Its eigenvalues are $\alpha$ in tangential directions and $\alpha^3$ in the
+radial direction. They lie in $(0,1]$, proving one-Lipschitzness. Differentiating
+$J_s$ in a unit direction and applying the triangle inequality gives
+\[
+ \|D J_s(x)\|_{\rm op}
+ \leq\frac1S\left(3\alpha^3\frac{\|x\|}{S}
+ +3\alpha^5\frac{\|x\|^3}{S^3}\right)\leq\frac6S.
+\]
+
+Set $A(x)=U^\top s_S(x)$. For $g\in\partial h(A(x))$, weak convexity gives
+\begin{align*}
+ h(A(y))&\geq h(A(x))+\langle g,A(y)-A(x)\rangle\\
+ &\quad-\frac12\|A(y)-A(x)\|^2.
+\end{align*}
+The first-order Taylor remainder of $A$ has norm at most
+$3\|y-x\|^2/S$. Since $\|g\|\leq1$ and $A$ is one-Lipschitz, the right side
+is at least
+\[
+ h(A(x))+\langle J_A(x)^\top g,y-x\rangle
+ -\frac{1+6/S}{2}\|y-x\|^2.
+\]
+This is the subgradient characterization of $(1+6/S)$-weak convexity.
+\end{proof}
+
+\begin{lemma}[Wrapper class]
+\label{lem:wrapper-class}
+For $B=512\sqrt M$ and $S=16B$, the function
+\[
+ H_U(x)=\frac14\left[\bar f(U^\top s_S(x))
+ +3(\sqrt{B^2+\|x\|^2}-B)\right]
+\]
+is one-Lipschitz, one-weakly convex, bounded below, and has initial gap at
+most $3M/(4N)$.
+\end{lemma}
+
+\begin{proof}
+The first term before scaling is one-Lipschitz by composition. The radial
+term is convex, nonnegative, and three-Lipschitz. Hence the factor $1/4$
+gives one-Lipschitzness. Lemma~\ref{lem:soft} gives weak-convexity modulus
+at most $(1+6/S)/4<1$. The radial term vanishes at zero, so adding it can
+only raise the infimum. Lemma~\ref{lem:analytic} gives the gap bound.
+\end{proof}
+
+\section{No Stationarity Created by the Wrapper}
+\label{app:stationarity}
+
+\begin{lemma}[Wrapper stationarity]
+\label{lem:stationarity}
+Suppose
+$|\langle u_{M,j},s_S(x)\rangle|<\tau$ for every
+$j>r_N:=\lfloor N/2\rfloor$. Then
+\[
+ \|\nabla(H_U)_{1/2}(x)\|>\frac1{64\sqrt N}.
+\]
+\end{lemma}
+
+\begin{proof}
+Suppose otherwise. Let
+$z=\prox_{\frac12 H_U}(x):=\arg\min_y\{H_U(y)+\|y-x\|^2\}$ and
+$d=2(x-z)=\nabla(H_U)_{1/2}(x)$. Proximal optimality gives
+$d\in\partial H_U(z)$. The derivative of $U^\top s_S$ is surjective, so the
+exact subdifferential chain rule yields some
+$g\in\partial\bar f(U^\top s_S(z))$ such that
+\begin{equation}
+ 4d=J_s(z)Ug+\frac{3z}{\sqrt{B^2+\|z\|^2}}.
+ \label{eq:prox-subgrad}
+\end{equation}
+Because $\|J_s(z)Ug\|\leq1$, if $\|z\|\geq B$ then
+\[
+ \|4d\|\geq\frac3{\sqrt2}-1>1.
+\]
+This contradicts $\|4d\|\leq1/(16\sqrt N)$. Thus $\|z\|<B$.
+
+Set $\alpha=(1+\|z\|^2/S^2)^{-1/2}$,
+$w=U^\top z$, and $y=\alpha w$. Since $s_S$ is one-Lipschitz,
+\begin{align*}
+ \|(y^M_{r_N+1},\ldots,y^M_N)\|
+ &\leq \sqrt N\tau+\|s_S(z)-s_S(x)\|\\
+ &\leq\frac1{64N^{3/2}}+\frac1{128\sqrt N}
+ \leq\frac1{64\sqrt N}.
+\end{align*}
+Using Lemma~\ref{lem:q},
+\begin{align*}
+ \psi(y^M)
+ &\leq\frac{r_N}{N}
+ +\frac1N\frac{256}{75}\frac{N^2}{16}
+ \sum_{j>r_N}(y^M_j)^2\\
+ &\leq\frac12+\frac1{19200}<\frac{2783}{3375}=b.
+\end{align*}
+Lemma~\ref{lem:phase} now gives $g\leq0$ coordinatewise and
+$\|g\|\geq1/(4\sqrt N)$.
+
+Projecting \eqref{eq:prox-subgrad} by $U^\top$ gives
+\[
+ U^\top(4d)=\alpha g+cw,
+ \quad
+ c=\frac3{\sqrt{B^2+\|z\|^2}}
+ -\frac{\alpha^3\langle w,g\rangle}{S^2}.
+\]
+Here $\alpha>255/256$, $\|w\|<B$, and $\|g\|\leq1$. Thus
+\[
+ c>\frac{2}{B}-\frac1{256B}>0,
+ \qquad c<\frac{3+1/256}{B}.
+\]
+Let $I=\supp(g)$. By Lemma~\ref{lem:phase},
+\[
+ \|(w_I)_+\|\leq\frac{13\sqrt{MN}}{2\alpha N}
+ =\frac{13\sqrt M}{2\alpha\sqrt N}.
+\]
+Since $c>0$, negative entries of $w_I$ reinforce $g_I$. Therefore
+\begin{align*}
+ \|4d\|&\geq\|\alpha g+cw\|\\
+ &\geq\frac{\alpha}{4\sqrt N}
+ -\frac{3+1/256}{512\sqrt M}
+ \frac{13\sqrt M}{2\alpha\sqrt N}\\
+ &>\frac1{5\sqrt N}.
+\end{align*}
+This gives $\|d\|>1/(20\sqrt N)>1/(64\sqrt N)$, a contradiction.
+\end{proof}
+
+Lemmas~\ref{lem:wrapper-class} and \ref{lem:stationarity} prove
+the wrapper proposition in the main paper.
+
+\section{The Conditional-Haar Reduction}
+\label{app:rotation}
+
+We state the random-rotation argument in the exact local-oracle form used here.
+Let $\pi(1),\ldots,\pi(n)$ order coordinates by nondecreasing level. Let
+$K_t=\{k:\ell(\pi(k))=t\}$.
+
+\begin{lemma}[Adapted conditional-Haar bound]
+\label{lem:adapted-haar}
+Draw $U=(u_1,\ldots,u_n)$ uniformly from the Stiefel manifold and let $\xi$
+be independent of $U$. Suppose $v_k$ is measurable with respect to
+$\xi,u_1,\ldots,u_{k-1}$ and $\|v_k\|\leq S$ for every $k\in[n]$. If
+\[
+ d\geq n+2S^2\tau^{-2}\log(2n^2/\delta),
+\]
+then, with probability at least $1-\delta$,
+\[
+ |\langle u_j,v_k\rangle|<\tau,
+ \qquad 1\leq k\leq j\leq n.
+\]
+\end{lemma}
+
+\begin{proof}
+Fix $k\leq j$ and condition on
+$\mathcal G_{k-1}:=\sigma(\xi,u_1,\ldots,u_{k-1})$. The remaining ordered frame is Haar in the
+orthogonal complement $E_k$ of these columns, whose dimension is
+$d-k+1$. In particular, $u_j$ has a uniform marginal on the unit sphere in
+$E_k$. The vector $v_k$ is fixed under the conditioning. If $a_k$ is its
+projection onto $E_k$, then $\|a_k\|\leq S$. The standard spherical-cap
+bound, also used by \citet[Appendix~B.3]{carmon2020stationary}, gives
+\begin{align*}
+ \Pr\bigl(|\langle u_j,v_k\rangle|\geq\tau
+ \mid\mathcal G_{k-1}\bigr)
+ &\leq 2\exp\left(-\frac{(d-k)\tau^2}{2S^2}\right)\\
+ &\leq 2\exp\left(-\frac{(d-n)\tau^2}{2S^2}\right)\\
+ &\leq\frac{\delta}{n^2}.
+\end{align*}
+The event is impossible when $a_k=0$. Averaging removes the conditioning.
+A union bound over fewer than $n^2$ pairs $(k,j)$ proves the claim. Notice
+that no conditioning on preceding good events is needed because adaptedness
+holds globally.
+\end{proof}
+
+\begin{lemma}[Virtual-query rotation]
+\label{lem:virtual}
+Fix a randomized algorithm with random seed $\xi$. Through the hard horizon,
+with probability at least $1-\delta$, its effective query $y_t=s_S(x_t)$
+satisfies
+\[
+ |\langle u_{\pi(k)},y_t\rangle|<\tau
+ \quad\text{whenever }\ell(\pi(k))\geq t,
+\]
+provided the dimension bound in Lemma~\ref{lem:adapted-haar} holds.
+\end{lemma}
+
+\begin{proof}
+We first define a surrogate transcript on every history. At round $t$, feed
+the algorithm the value and full subdifferential of the local wrapped function
+obtained by replacing $\bar f(y)$ with $\bar f(P_ty)$. This response depends
+only on $x_t$ and columns through level $t$. Recursively, the surrogate query
+$\widetilde x_t$ and its effective point
+$\widetilde y_t=s_S(\widetilde x_t)$ are measurable with respect to $\xi$ and
+columns in levels below $t$.
+
+Extend the algorithm after its output by fixed zero queries, so its surrogate
+queries are defined through the hard horizon. Construct a length-$n$ virtual
+sequence. If $k\in K_t$ and $t<H$, set $v_k=\widetilde y_t$. Set all later
+entries to zero. Denote the ordered column $u_{\pi(k)}$ by $\widetilde u_k$.
+For $k\in K_t$, the point $v_k$ depends only on columns in levels below $t$,
+hence only on
+$\xi,\widetilde u_1,\ldots,\widetilde u_{k-1}$. Repetition within a layer does
+not use the same-layer columns already inserted in the virtual order.
+Lemma~\ref{lem:adapted-haar}, applied to the reordered frame, now gives the
+claimed inequalities for the surrogate points.
+
+It remains to couple the surrogate and true transcripts. At round zero their
+queries agree because both depend only on $\xi$. Suppose they agree through
+the query at round $t$. The adapted-Haar event makes every coordinate of
+$U^\top s_S(x_t)$ at level at least $t$ smaller than $\tau$. Applying
+Lemma~\ref{lem:locality} with index $t-1$ shows that $\bar f$ agrees locally
+with $\bar f\circ P_t$. Values and full subdifferentials are local quantities.
+The exact subdifferential chain rule through $U^\top s_S$ therefore makes the
+true oracle response equal to the surrogate response. The soft projection and
+radial term are fixed and reveal no additional column. The next queries agree
+by induction. Thus the surrogate inequalities hold for the true queries
+through the hard horizon.
+\end{proof}
+
+Lemma~\ref{lem:virtual} proves the random-rotation lemma in the main paper.
+Notice that local equality is what controls the entire subdifferential set. A
+norm approximation would not suffice.
+
+\section{Scaling and Completion}
+\label{app:scaling}
+
+\begin{lemma}[Exact scaling]
+\label{lem:scaling}
+If $H$ is one-Lipschitz and one-weakly convex, define
+\[
+ F(x)=\frac{G^2}{\rho}H\left(\frac\rho Gx\right).
+\]
+Then $F$ is $G$-Lipschitz and $\rho$-weakly convex, and
+\[
+ \nabla F_{1/(2\rho)}(x)
+ =G\nabla H_{1/2}\left(\frac\rho Gx\right).
+\]
+\end{lemma}
+
+\begin{proof}
+The Lipschitz and weak-convexity claims follow directly by substitution. For
+$y=\rho x/G$, changing variables in the proximal problem gives
+\[
+ \prox_{\frac1{2\rho}F}(x)=\frac G\rho\prox_{\frac12H}(y).
+\]
+Multiplying the displacement by $2\rho$ proves the gradient identity.
+\end{proof}
+
+\begin{proof}[Proof of Theorem 1]
+Set $\kappa=1/64$ and
+\[
+ r=\min\{\rho\Delta/G^2,1\},\quad
+ N=\left\lfloor\frac{\kappa^2G^2}{\ve^2}\right\rfloor,
+ \quad M=\left\lfloor\frac{Nr}{12}\right\rfloor.
+\]
+It is enough to assume
+$\ve^2\leq c_0\min\{G^2,\rho\Delta\}$ with
+$c_0=\kappa^2/120$. Then $N\geq60$, $Nr\geq60$, and
+$2\leq M\leq N/12$. Let $F_U$ be the scaled wrapper.
+Lemma~\ref{lem:wrapper-class} and Lemma~\ref{lem:scaling} show that it is
+$G$-Lipschitz and $\rho$-weakly convex. Its initial gap is at most
+\[
+ \frac{G^2}{\rho}\frac{3M}{4N}
+ \leq\frac{G^2r}{16\rho}\leq\Delta.
+\]
+
+Let $H=(M-1)L+\lfloor N/2\rfloor$. Since $N\geq60$,
+$L\geq N/6$, and therefore $H\geq MN/120$. Apply
+Lemma~\ref{lem:virtual} with $\delta=1/4$. Given an algorithm for $F_U$,
+rescaling its queries by $\rho/G$ and its oracle transcript by the inverse
+factors in Lemma~\ref{lem:scaling} gives an induced algorithm for $H_U$.
+On its good event, every query before $H$ satisfies the terminal projection
+condition of Lemma~\ref{lem:stationarity}. Exact scaling gives
+\[
+ \|\nabla(F_U)_{1/(2\rho)}(x_t)\|
+ >\frac{\kappa G}{\sqrt N}\geq\ve.
+\]
+ Index the oracle calls as $x_0,\ldots,x_{T-1}$. After $T<H$ calls, append
+ the transcript-measurable output as $x_T$. It is still before level $H$, so
+ the same statement applies to it.
+
+The probability of the good event, averaged jointly over $U$ and algorithmic
+randomness, is at least $3/4$. Hence some fixed frame $U$ makes the algorithm
+fail with probability at least $3/4$, which rules out success probability
+$1/2$. Finally,
+$N\geq\kappa^2G^2/(2\ve^2)$ and
+$M\geq Nr/24$, so
+\[
+ H\geq\frac{MN}{120}
+ \geq\frac{\kappa^4}{11520}
+ \frac{G^2\min\{\rho\Delta,G^2\}}{\ve^4}.
+\]
+Reducing the numerical constant accounts for the appended output query. This
+proves the theorem.
+\end{proof}
+
+\bibliography{references}
+
+\end{document}
