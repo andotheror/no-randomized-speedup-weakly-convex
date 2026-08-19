@@ -37,80 +37,22 @@
 ]
 
 \begin{abstract}
-For globally Lipschitz weakly convex optimization, the best known methods in
-the local value-and-subdifferential model need order $\ve^{-4}$ queries to make
-the Moreau-envelope gradient at most $\ve$. A recent lower bound proves that
-this rate is unavoidable for
-deterministic algorithms, even when every query returns the full
-subdifferential set. Whether randomization can improve the rate was left open.
+For globally Lipschitz weakly convex optimization, the best known methods in the local value-and-subdifferential model need order $\ve^{-4}$ queries to make the Moreau-envelope gradient at most $\ve$. A recent lower bound proves that this rate is unavoidable for deterministic algorithms, even when every query returns the full subdifferential set. Whether randomization can improve the rate was left open.
 
-We prove that it cannot. Every randomized algorithm requires
-\[
- \Omega\!\left(
- \frac{G^2\min\{\rho\Delta,G^2\}}{\ve^4}
- \right)
-\]
-queries on the class of $G$-Lipschitz, $\rho$-weakly convex functions with
-initial gap at most $\Delta$. The oracle returns both the value and the entire
-subdifferential. The hard instances live in a polynomial dimension.
-When $\Delta\leq G^2/\rho$, the lower bound matches the known randomized
-upper bound in all four problem parameters.
+We prove that it cannot. Every randomized algorithm requires \[ \Omega\!\left( \frac{G^2\min\{\rho\Delta,G^2\}}{\ve^4} \right) \] queries on the class of $G$-Lipschitz, $\rho$-weakly convex functions with initial gap at most $\Delta$. The oracle returns both the value and the entire subdifferential. The hard instances live in a polynomial dimension. When $\Delta\leq G^2/\rho$, the lower bound matches the known randomized upper bound in all four problem parameters.
 
-Two obstacles distinguish the result from a standard random rotation. A full
-subdifferential exposes any exact dependence on an unrevealed direction, and
-unbounded queries defeat concentration. We give the diagonal chain a smooth
-dead zone that yields exact local independence. We then combine a smooth soft
-projection with a linear-growth radial penalty. This wrapper is globally
-Lipschitz, preserves weak convexity, hides unbounded queries, and introduces no
-spurious Moreau-stationary point. A conditional-Haar argument completes the
-randomized lower bound.
+Two obstacles distinguish the result from a standard random rotation. A full subdifferential exposes any exact dependence on an unrevealed direction, and unbounded queries defeat concentration. We give the diagonal chain a smooth dead zone that yields exact local independence. We then combine a smooth soft projection with a linear-growth radial penalty. This wrapper is globally Lipschitz, preserves weak convexity, hides unbounded queries, and introduces no spurious Moreau-stationary point. A conditional-Haar argument completes the randomized lower bound.
 \end{abstract}
 
 \section{Introduction}
 
-A function $f:\R^d\to\R$ is $\rho$-weakly convex if
-$f+\frac{\rho}{2}\|\cdot\|^2$ is convex. This class contains convex-composite,
-robust-estimation, and phase-retrieval objectives while allowing nonsmooth and
-nonconvex geometry. Its standard stationarity measure is the gradient of the
-Moreau envelope
-\[
- f_{1/(2\rho)}(x)=\min_z\{f(z)+\rho\|x-z\|^2\}.
-\]
-Subgradient and model-based methods find a point with
-$\E\|\nabla f_{1/(2\rho)}(x)\|\leq\ve$ using
-$O(\rho G^2\Delta/\ve^4)$ queries in the small-gap regime
-\citep{davis2018stochastic,davis2019model}. The fourth power contrasts with
-the second-power rate of smooth nonconvex optimization.
-Earlier model-based work established asymptotic convergence without a rate
-\citep{duchi2018stochastic}. More recent deterministic work gives
-fourth-power guarantees for related Goldstein targets and for Moreau
-stationarity through bundle subproblems
-\citep{kong2024cost,liao2025proximal}.
+A function $f:\R^d\to\R$ is $\rho$-weakly convex if $f+\frac{\rho}{2}\|\cdot\|^2$ is convex. This class contains convex-composite, robust-estimation, and phase-retrieval objectives while allowing nonsmooth and nonconvex geometry. Its standard stationarity measure is the gradient of the Moreau envelope \[ f_{1/(2\rho)}(x)=\min_z\{f(z)+\rho\|x-z\|^2\}. \] Subgradient and model-based methods find a point with $\E\|\nabla f_{1/(2\rho)}(x)\|\leq\ve$ using $O(\rho G^2\Delta/\ve^4)$ queries in the small-gap regime \citep{davis2018stochastic,davis2019model}. The fourth power contrasts with the second-power rate of smooth nonconvex optimization. Earlier model-based work established asymptotic convergence without a rate \citep{duchi2018stochastic}. More recent deterministic work gives fourth-power guarantees for related Goldstein targets and for Moreau stationarity through bundle subproblems \citep{kong2024cost,liao2025proximal}.
 
-\citet{li2026deterministic} recently showed that this contrast is intrinsic
-for deterministic algorithms. Their oracle is unusually strong. At $x$, it
-returns $(f(x),\partial f(x))$, including the entire subdifferential set rather
-than a selected subgradient. Their construction couples tilted max-affine
-blocks into a constant-width diagonal zero-chain. A finite-horizon resisting
-rotation then handles arbitrary deterministic queries.
+\citet{li2026deterministic} recently showed that this contrast is intrinsic for deterministic algorithms. Their oracle is unusually strong. At $x$, it returns $(f(x),\partial f(x))$, including the entire subdifferential set rather than a selected subgradient. Their construction couples tilted max-affine blocks into a constant-width diagonal zero-chain. A finite-horizon resisting rotation then handles arbitrary deterministic queries.
 
-That rotation can depend on a deterministic trajectory. It does not apply to
-a randomized method. Drawing a rotation in advance creates two leaks. First,
-a small positive projection onto an unrevealed direction changes the smooth
-relay and appears in the full subdifferential. Second, a randomized algorithm
-can query at arbitrarily large norm, amplifying a random projection until the
-hidden direction becomes visible. The latter issue also appears in smooth
-nonconvex lower bounds, where it is handled by a soft projection and a
-quadratic penalty \citep{carmon2020stationary}. A quadratic is not available
-here because the objective must be globally Lipschitz.
+That rotation can depend on a deterministic trajectory. It does not apply to a randomized method. Drawing a rotation in advance creates two leaks. First, a small positive projection onto an unrevealed direction changes the smooth relay and appears in the full subdifferential. Second, a randomized algorithm can query at arbitrarily large norm, amplifying a random projection until the hidden direction becomes visible. The latter issue also appears in smooth nonconvex lower bounds, where it is handled by a soft projection and a quadratic penalty \citep{carmon2020stationary}. A quadratic is not available here because the objective must be globally Lipschitz.
 
-We resolve both leaks. A shifted smoothstep makes the diagonal chain locally
-constant on a neighborhood of every unrevealed relay coordinate. The tilted
-facets already have strict intercept gaps. At radius
-$\tau=1/(64N^2)$, these two facts give exact local independence from every
-direction more than one filtration layer ahead. This exact statement matters:
-an approximation in value or gradient would not control an oracle that returns
-the full subdifferential set.
+We resolve both leaks. A shifted smoothstep makes the diagonal chain locally constant on a neighborhood of every unrevealed relay coordinate. The tilted facets already have strict intercept gaps. At radius $\tau=1/(64N^2)$, these two facts give exact local independence from every direction more than one filtration layer ahead. This exact statement matters: an approximation in value or gradient would not control an oracle that returns the full subdifferential set.
 
 For unbounded queries, we introduce the wrapper
 \begin{equation}
@@ -120,144 +62,64 @@ For unbounded queries, we introduce the wrapper
  \right],
  \label{eq:wrapper}
 \end{equation}
-where $s_S(x)=x/\sqrt{1+\|x\|^2/S^2}$ and $U$ has orthonormal columns.
-The first term only sees a point of norm at most $S$. The second has bounded
-slope and prevents stationarity at infinity. Their interaction is the main
-technical issue. We prove that the radial term cannot cancel the chain
-subgradient at a proximal point. Every positive coordinate on the support of
-that subgradient is $O(1/N)$, while the chain norm is
-$\Omega(N^{-1/2})$.
+where $s_S(x)=x/\sqrt{1+\|x\|^2/S^2}$ and $U$ has orthonormal columns. The first term only sees a point of norm at most $S$. The second has bounded slope and prevents stationarity at infinity. Their interaction is the main technical issue. We prove that the radial term cannot cancel the chain subgradient at a proximal point. Every positive coordinate on the support of that subgradient is $O(1/N)$, while the chain norm is $\Omega(N^{-1/2})$.
 
 \paragraph{Contributions.}
-Our main theorem closes the randomized local-oracle complexity in the small-gap
-regime $\Delta\leq G^2/\rho$. It matches both the deterministic lower bound
-and the known randomized upper bound, including the dependence on
-$G,\rho,\Delta$, and $\ve$. The proof also gives a reusable globally Lipschitz
-replacement for the quadratic soft-projection wrapper in randomized
-stationarity lower bounds. Finally, we formulate a robust full-set chain
-condition and show that a width-six diagonal filtration is compatible with the
-conditional-Haar argument of \citet{carmon2020stationary}.
+Our main theorem closes the randomized local-oracle complexity in the small-gap regime $\Delta\leq G^2/\rho$. It matches both the deterministic lower bound and the known randomized upper bound, including the dependence on $G,\rho,\Delta$, and $\ve$. The proof also gives a reusable globally Lipschitz replacement for the quadratic soft-projection wrapper in randomized stationarity lower bounds. Finally, we formulate a robust full-set chain condition and show that a width-six diagonal filtration is compatible with the conditional-Haar argument of \citet{carmon2020stationary}.
 
 \paragraph{Related lower bounds.}
-Random rotations are classical in randomized convex lower bounds
-\citep{woodworth2017randomized,diakonikolas2020parallel}. The robust zero-chain
-and soft-projection framework of \citet{carmon2020stationary} treats smooth
-functions and local derivative oracles. \citet{kornowski2022oracle} prove a
-different impossibility result for finding a point near one with a small
-Clarke subgradient. Their class is unrestricted Lipschitz nonconvex functions,
-and their target is not Moreau stationarity. The closest result is
-\citet{li2026deterministic}, which proves the deterministic version of our rate
-and explicitly leaves randomized full-set algorithms open. We retain their
-tilted-block architecture, but both robustness and the Lipschitz wrapper are
-new.
+Random rotations are classical in randomized convex lower bounds \citep{woodworth2017randomized,diakonikolas2020parallel}. The robust zero-chain and soft-projection framework of \citet{carmon2020stationary} treats smooth functions and local derivative oracles. \citet{kornowski2022oracle} prove a different impossibility result for finding a point near one with a small Clarke subgradient. Their class is unrestricted Lipschitz nonconvex functions, and their target is not Moreau stationarity. The closest result is \citet{li2026deterministic}, which proves the deterministic version of our rate and explicitly leaves randomized full-set algorithms open. We retain their tilted-block architecture, but both robustness and the Lipschitz wrapper are new.
 
-The upper-bound literature uses several oracle models. Stochastic
-subgradient and model-based schemes control the Moreau-envelope gradient
-\citep{davis2018stochastic,davis2019model}, while proximally guided methods
-control a nearby stationarity certificate \citep{davis2019guided}. The
-deterministic method of \citet{kong2024cost} uses a directional subgradient
-oracle. \citet{liao2025proximal} obtain the same fourth-power Moreau rate with
-function values and subgradients through convex bundle subproblems. Our lower
-bound grants the algorithm the full set $\partial f(x)$, so it covers these
-first-order information models when specialized to the same class and target.
+The upper-bound literature uses several oracle models. Stochastic subgradient and model-based schemes control the Moreau-envelope gradient \citep{davis2018stochastic,davis2019model}, while proximally guided methods control a nearby stationarity certificate \citep{davis2019guided}. The deterministic method of \citet{kong2024cost} uses a directional subgradient oracle. \citet{liao2025proximal} obtain the same fourth-power Moreau rate with function values and subgradients through convex bundle subproblems. Our lower bound grants the algorithm the full set $\partial f(x)$, so it covers these first-order information models when specialized to the same class and target.
 
-Structured smoothing can be faster under stronger access. The framework of
-\citet{deng2026smooth} assumes that a prescribed smooth approximation is
-computationally tractable and that its gradients can be queried. Moreau
-smoothing then requires solving a proximal optimization problem, while
-Nesterov smoothing uses a known composite representation. The method of
-\citet{najar2026variable} similarly uses explicit composite structure and a
-linear minimization oracle. Such surrogate gradients are not determined by
-the local pair $(f(x),\partial f(x))$. Our theorem therefore separates these
-structured models from black-box local first-order access.
+Structured smoothing can be faster under stronger access. The framework of \citet{deng2026smooth} assumes that a prescribed smooth approximation is computationally tractable and that its gradients can be queried. Moreau smoothing then requires solving a proximal optimization problem, while Nesterov smoothing uses a known composite representation. The method of \citet{najar2026variable} similarly uses explicit composite structure and a linear minimization oracle. Such surrogate gradients are not determined by the local pair $(f(x),\partial f(x))$. Our theorem therefore separates these structured models from black-box local first-order access.
 
 \section{Model and Main Result}
 \label{sec:model}
 
-For $G,\rho,\Delta>0$, let $\cF(G,\rho,\Delta)$ be the union over dimensions of finite-valued,
-bounded-below functions $f:\R^d\to\R$ such that $f$ is $G$-Lipschitz,
-$\rho$-weakly convex, and
-\[
- f(0)-\inf_x f(x)\leq\Delta.
-\]
-The oracle is $\cO_f(x)=(f(x),\partial f(x))$. Weakly convex functions are
-subdifferentially regular, so the usual limiting, Clarke, and regular
-subdifferentials agree \citep{rockafellar2009variational}. Algorithms are
-measurable, may use internal randomness, start at zero, and may choose each
-query from the full previous transcript. An arbitrary transcript-measurable
-output is allowed.
+For $G,\rho,\Delta>0$, let $\cF(G,\rho,\Delta)$ be the union over dimensions of finite-valued, bounded-below functions $f:\R^d\to\R$ such that $f$ is $G$-Lipschitz, $\rho$-weakly convex, and \[ f(0)-\inf_x f(x)\leq\Delta. \] The oracle is $\cO_f(x)=(f(x),\partial f(x))$. Weakly convex functions are subdifferentially regular, so the usual limiting, Clarke, and regular subdifferentials agree \citep{rockafellar2009variational}. Algorithms are measurable, may use internal randomness, start at zero, and may choose each query from the full previous transcript. An arbitrary transcript-measurable output is allowed.
 
 \begin{definition}[Randomized query complexity]
-For failure probability $\delta\in(0,1)$, let
-$T_{\ve,\delta}^{\rm rand}(\cF)$ be the least $T$ for which a randomized
-algorithm can, for every $f\in\cF$, make at most $T$ oracle calls and output
-$\widehat x$ satisfying
-$\Pr(\|\nabla f_{1/(2\rho)}(\widehat x)\|\leq\ve)\geq1-\delta$.
+For failure probability $\delta\in(0,1)$, let $T_{\ve,\delta}^{\rm rand}(\cF)$ be the least $T$ for which a randomized algorithm can, for every $f\in\cF$, make at most $T$ oracle calls and output $\widehat x$ satisfying $\Pr(\|\nabla f_{1/(2\rho)}(\widehat x)\|\leq\ve)\geq1-\delta$.
 \end{definition}
 
 \begin{theorem}[Randomization does not help]
 \label{thm:main}
-There are numerical constants $c_0,c_1>0$ such that, whenever
-\[
- \ve^2\leq c_0\min\{G^2,\rho\Delta\},
-\]
-we have
-\[
- T_{\ve,1/2}^{\rm rand}\bigl(\cF(G,\rho,\Delta)\bigr)
- \geq c_1
- \frac{G^2\min\{\rho\Delta,G^2\}}{\ve^4}.
-\]
-The hard function can be taken in a dimension polynomial in $G/\ve$.
+There are numerical constants $c_0,c_1>0$ such that, whenever \[ \ve^2\leq c_0\min\{G^2,\rho\Delta\}, \] we have \[ T_{\ve,1/2}^{\rm rand}\bigl(\cF(G,\rho,\Delta)\bigr) \geq c_1 \frac{G^2\min\{\rho\Delta,G^2\}}{\ve^4}. \] The hard function can be taken in a dimension polynomial in $G/\ve$.
 \end{theorem}
 
-When $\Delta\leq G^2/\rho$, projected subgradient descent
-\citep{davis2018stochastic} and Theorem~\ref{thm:main} give the minimax rate
+When $\Delta\leq G^2/\rho$, projected subgradient descent \citep{davis2018stochastic} and Theorem~\ref{thm:main} give the minimax rate
 \begin{equation}
  \Theta\!\left(
  \frac{\rho G^2\Delta}{\ve^4}
  \right).
  \label{eq:minimax-rate}
 \end{equation}
-Indeed, the optimized bound of \citet[Corollary~2.2]{davis2018stochastic},
-followed by Markov's inequality, gives success probability at least $1/2$ at
-this query order.
-For larger gaps, Theorem~\ref{thm:main} still gives the saturated lower bound
-$\Omega(G^4/\ve^4)$, but we do not claim a matching gap-independent upper
-bound.
+Indeed, the optimized bound of \citet[Corollary~2.2]{davis2018stochastic}, followed by Markov's inequality, gives success probability at least $1/2$ at this query order. For larger gaps, Theorem~\ref{thm:main} still gives the saturated lower bound $\Omega(G^4/\ve^4)$, but we do not claim a matching gap-independent upper bound.
 
 \section{An Exactly Robust Diagonal Chain}
 \label{sec:chain}
 
-We first construct an unscaled instance on $M$ blocks of $N$ coordinates.
-Assume $N\geq60$ and $2\leq M\leq N/12$. Write
-$z=(z^1,\ldots,z^M)\in\R^{MN}$. Define
+We first construct an unscaled instance on $M$ blocks of $N$ coordinates. Assume $N\geq60$ and $2\leq M\leq N/12$. Write $z=(z^1,\ldots,z^M)\in\R^{MN}$. Define
 \begin{align*}
  c_j&=1+\frac{N-j}{16N},\\
  \phi(u)&=\max\left\{0,\max_{j\in[N]}
  \left(c_j-\frac N8u_j\right)\right\}.
 \end{align*}
-Let $q(t)$ equal zero for $t\leq0$, $3t^2-2t^3$ for $0<t<1$, and one for
-$t\geq1$. We insert a dead zone by setting
+Let $q(t)$ equal zero for $t\leq0$, $3t^2-2t^3$ for $0<t<1$, and one for $t\geq1$. We insert a dead zone by setting
 \begin{align*}
  q_a(t)&=q\left(\frac{t-a}{1-a}\right),\qquad a=\frac1{16},\\
  \psi(u)&=\frac1N\sum_{j=1}^N q_a\left(\frac N4u_j\right).
 \end{align*}
-With $\psi(z^0)=1$, define phase scores
-\[
- \sigma_m(z)=\phi(z^m)+\psi(z^{m-1})-\frac54
-\]
-and the hard function
+With $\psi(z^0)=1$, define phase scores \[ \sigma_m(z)=\phi(z^m)+\psi(z^{m-1})-\frac54 \] and the hard function
 \begin{equation}
  \bar f(z)=\frac2N\left(\|[\sigma(z)]_+\|_2
  -\sum_{m=1}^M\psi(z^m)\right).
  \label{eq:base}
 \end{equation}
-This is the tilted-block construction of \citet{li2026deterministic} with
-$q$ replaced by $q_a$.
+This is the tilted-block construction of \citet{li2026deterministic} with $q$ replaced by $q_a$.
 
-The analytic structure is visible from a variational representation. Let
-$W=\{w\in\R_+^M:\|w\|\leq1\}$ and set $w_{M+1}=0$. The support-function
-identity for the positive orthant gives
+The analytic structure is visible from a variational representation. Let $W=\{w\in\R_+^M:\|w\|\leq1\}$ and set $w_{M+1}=0$. The support-function identity for the positive orthant gives
 \begin{align}
  \bar f(z)&=\max_{w\in W}F_w(z),\nonumber\\
  F_w(z)&=\frac2N\left(w_1-\frac54\sum_{m=1}^Mw_m\right)
@@ -265,66 +127,24 @@ identity for the positive orthant gives
  &\quad-\frac2N\sum_{m=1}^M(1-w_{m+1})\psi(z^m).
  \label{eq:variational}
 \end{align}
-Every $F_w$ has weak-convexity modulus at most $64/75$. Indeed, the tilted
-terms are convex and the negative progress terms have this common curvature
-bound. The pointwise maximum preserves it. The same formula gives the full
-max-rule subdifferential used below, including all active tilted facets.
+Every $F_w$ has weak-convexity modulus at most $64/75$. Indeed, the tilted terms are convex and the negative progress terms have this common curvature bound. The pointwise maximum preserves it. The same formula gives the full max-rule subdifferential used below, including all active tilted facets.
 
-Let $L=\lfloor3N/16\rfloor$ and assign coordinate $(m,j)$ the level
-\[
- \ell(m,j)=(m-1)L+j-1.
-\]
-Let $V_t$ span the coordinates of level at most $t$, with $V_{-1}=\{0\}$.
-Every layer has at most six coordinates. Let $P_t$ denote orthogonal
-projection onto $V_t$ and set $\tau=1/(64N^2)$.
+Let $L=\lfloor3N/16\rfloor$ and assign coordinate $(m,j)$ the level \[ \ell(m,j)=(m-1)L+j-1. \] Let $V_t$ span the coordinates of level at most $t$, with $V_{-1}=\{0\}$. Every layer has at most six coordinates. Let $P_t$ denote orthogonal projection onto $V_t$ and set $\tau=1/(64N^2)$.
 
 \begin{proposition}[Robust chain certificates]
 \label{prop:base}
-The function $\bar f$ is bounded below, one-Lipschitz, and one-weakly convex.
-It satisfies
-$\bar f(0)-\inf\bar f\leq3M/N$. Moreover:
+The function $\bar f$ is bounded below, one-Lipschitz, and one-weakly convex. It satisfies $\bar f(0)-\inf\bar f\leq3M/N$. Moreover:
 \begin{enumerate}
 \item For any integer $t\geq-1$, if $|z_{m,j}|<\tau$ whenever
-$\ell(m,j)>t$, then throughout a
-neighborhood of $z$,
-\[
- \bar f(y)=\bar f(P_{t+1}y).
-\]
+$\ell(m,j)>t$, then throughout a neighborhood of $z$, \[ \bar f(y)=\bar f(P_{t+1}y). \]
 \item Set $b=q_a(3/4)=2783/3375$. If $\psi(z^M)<b$, then
-$R(z):=\|[\sigma(z)]_+\|_2>0$. Every $g\in\partial\bar f(z)$ is
-coordinatewise nonpositive and satisfies
-\[
- \|g\|\geq\frac1{4\sqrt N}.
-\]
-If $g_{m,j}<0$ and $z^m_j>0$, then $z^m_j<13/(2N)$.
+$R(z):=\|[\sigma(z)]_+\|_2>0$. Every $g\in\partial\bar f(z)$ is coordinatewise nonpositive and satisfies \[ \|g\|\geq\frac1{4\sqrt N}. \] If $g_{m,j}<0$ and $z^m_j>0$, then $z^m_j<13/(2N)$.
 \end{enumerate}
 \end{proposition}
 
-The first statement is exact. For a partially revealed block, the first
-hidden facet beats the next one by at least
-\[
- \frac1{16N}-\frac{N\tau}{4}>0.
-\]
-For an unreached block, its phase score is at most
-$-1/(16N)+N\tau/8<0$. All hidden progress coordinates lie strictly inside
-the dead zone. To see the complete filtration argument, let
-\[
- k_m=\min\{N,\max\{0,t-(m-1)L+1\}\}.
-\]
-If $1\leq k_m<N$, the progress term uses only coordinates through $k_m$, and
-the strict facet comparison makes $k_m+1$ the only possibly relevant hidden
-facet. If $k_m=0$ and $m\geq2$, then $k_{m-1}\leq L$, so
-$\psi(z^{m-1})\leq3/16$ and the phase score is strictly negative. When
-$m=1$ and $t=-1$, only its first facet can matter. Fully revealed blocks
-already lie in $V_t$. The strict margins persist on a neighborhood, proving
-local equality with the projection onto $V_{t+1}$.
+The first statement is exact. For a partially revealed block, the first hidden facet beats the next one by at least \[ \frac1{16N}-\frac{N\tau}{4}>0. \] For an unreached block, its phase score is at most $-1/(16N)+N\tau/8<0$. All hidden progress coordinates lie strictly inside the dead zone. To see the complete filtration argument, let \[ k_m=\min\{N,\max\{0,t-(m-1)L+1\}\}. \] If $1\leq k_m<N$, the progress term uses only coordinates through $k_m$, and the strict facet comparison makes $k_m+1$ the only possibly relevant hidden facet. If $k_m=0$ and $m\geq2$, then $k_{m-1}\leq L$, so $\psi(z^{m-1})\leq3/16$ and the phase score is strictly negative. When $m=1$ and $t=-1$, only its first facet can matter. Fully revealed blocks already lie in $V_t$. The strict margins persist on a neighborhood, proving local equality with the projection onto $V_{t+1}$.
 
-For the second statement, $R(z)>0$ makes the active outer weight unique. The
-tilted-facet and negative-progress terms in every subgradient are both
-coordinatewise nonpositive, so they cannot cancel. Their block norms sum to
-at least $1/(16N)$. Positivity of a supporting coordinate forces either an
-active facet above $1/4$ or an unsaturated progress derivative. Both give the
-$13/(2N)$ bound. Complete proofs appear in the supplement.
+For the second statement, $R(z)>0$ makes the active outer weight unique. The tilted-facet and negative-progress terms in every subgradient are both coordinatewise nonpositive, so they cannot cancel. Their block norms sum to at least $1/(16N)$. Positivity of a supporting coordinate forces either an active facet above $1/4$ or an unsaturated progress derivative. Both give the $13/(2N)$ bound. Complete proofs appear in the supplement.
 
 \section{A Lipschitz Wrapper for Unbounded Queries}
 \label{sec:wrapper}
@@ -334,40 +154,24 @@ Let $n=MN$, let $U\in\R^{d\times n}$ satisfy $U^\top U=I_n$, and set
  B&=512\sqrt M,\qquad S=16B,\\
  s_S(x)&=\frac{x}{\sqrt{1+\|x\|^2/S^2}}.
 \end{align*}
-Define $H_U$ by \eqref{eq:wrapper}. Unlike the quadratic wrapper used for
-smooth lower bounds, its radial term has slope at most three.
+Define $H_U$ by \eqref{eq:wrapper}. Unlike the quadratic wrapper used for smooth lower bounds, its radial term has slope at most three.
 
 \begin{proposition}[Wrapper certificates]
 \label{prop:wrapper}
-For every $U$, the function $H_U$ is bounded below, one-Lipschitz, and
-one-weakly convex. Its initial gap is at most $3M/(4N)$. If $x$ satisfies
+For every $U$, the function $H_U$ is bounded below, one-Lipschitz, and one-weakly convex. Its initial gap is at most $3M/(4N)$. If $x$ satisfies
 \begin{equation}
  \left|\left\langle u_{m,j},s_S(x)\right\rangle\right|<\tau,
  \qquad j>\lfloor N/2\rfloor,
  \label{eq:terminal-hidden}
 \end{equation}
-then
-\[
- \|\nabla(H_U)_{1/2}(x)\|>\frac1{64\sqrt N}.
-\]
+then \[ \|\nabla(H_U)_{1/2}(x)\|>\frac1{64\sqrt N}. \]
 \end{proposition}
 
-The class certificates follow from composition calculus. The map $s_S$ is
-one-Lipschitz and its Jacobian is $6/S$-Lipschitz. Composing a one-Lipschitz,
-one-weakly convex function with this map gives weak-convexity modulus at most
-$1+6/S$. The factor $1/4$ restores modulus and Lipschitz constant below one.
-The radial term is convex and nonnegative.
+The class certificates follow from composition calculus. The map $s_S$ is one-Lipschitz and its Jacobian is $6/S$-Lipschitz. Composing a one-Lipschitz, one-weakly convex function with this map gives weak-convexity modulus at most $1+6/S$. The factor $1/4$ restores modulus and Lipschitz constant below one. The radial term is convex and nonnegative.
 
-We outline the stationarity argument. Suppose the claimed bound fails, set
-$z=\prox_{\frac12 H_U}(x):=\arg\min_y\{H_U(y)+\|y-x\|^2\}$, and write
-$d=2(x-z)$. Then
-$d\in\partial H_U(z)$. If $\|z\|\geq B$, the radial subgradient has norm at
-least $3/\sqrt2$ before the factor $1/4$, while the hard term has norm at most
-one. Hence $\|z\|<B$.
+We outline the stationarity argument. Suppose the claimed bound fails, set $z=\prox_{\frac12 H_U}(x):=\arg\min_y\{H_U(y)+\|y-x\|^2\}$, and write $d=2(x-z)$. Then $d\in\partial H_U(z)$. If $\|z\|\geq B$, the radial subgradient has norm at least $3/\sqrt2$ before the factor $1/4$, while the hard term has norm at most one. Hence $\|z\|<B$.
 
-Let $\alpha=(1+\|z\|^2/S^2)^{-1/2}$ and $w=U^\top z$. For some
-$g\in\partial\bar f(\alpha w)$, projection of $4d$ onto the columns of $U$
-gives
+Let $\alpha=(1+\|z\|^2/S^2)^{-1/2}$ and $w=U^\top z$. For some $g\in\partial\bar f(\alpha w)$, projection of $4d$ onto the columns of $U$ gives
 \begin{equation}
  U^\top(4d)=\alpha g+c w,
  \qquad
@@ -375,37 +179,14 @@ gives
  -\frac{\alpha^3\langle w,g\rangle}{S^2}.
  \label{eq:cancellation}
 \end{equation}
-Here $0<c<(3+1/256)/B$. Condition \eqref{eq:terminal-hidden}, the proximal
-displacement, and the quadratic bound
-$q_a(t)\leq(256/75)t_+^2$ imply
-$\psi((\alpha w)^M)<b$. Proposition~\ref{prop:base} applies.
+Here $0<c<(3+1/256)/B$. Condition \eqref{eq:terminal-hidden}, the proximal displacement, and the quadratic bound $q_a(t)\leq(256/75)t_+^2$ imply $\psi((\alpha w)^M)<b$. Proposition~\ref{prop:base} applies.
 
-Only positive entries of $w$ can cancel the nonpositive vector $g$. On
-$\supp(g)$, every such entry is at most $13/(2\alpha N)$. Therefore
-\[
- \|\alpha g+cw\|
- \geq \left[
- \frac{\alpha}{4}
- -\frac{(3+1/256)13}{1024\alpha}
- \right]\frac1{\sqrt N}
- >\frac1{5\sqrt N}.
-\]
-After dividing by four, this contradicts
-$\|d\|\leq1/(64\sqrt N)$.
+Only positive entries of $w$ can cancel the nonpositive vector $g$. On $\supp(g)$, every such entry is at most $13/(2\alpha N)$. Therefore \[ \|\alpha g+cw\| \geq \left[ \frac{\alpha}{4} -\frac{(3+1/256)13}{1024\alpha} \right]\frac1{\sqrt N} >\frac1{5\sqrt N}. \] After dividing by four, this contradicts $\|d\|\leq1/(64\sqrt N)$.
 
 \section{Random Rotation and Proof of the Main Theorem}
 \label{sec:rotation}
 
-Draw $U$ uniformly from the Stiefel manifold of $d\times n$ orthonormal
-frames. Order its columns by nondecreasing filtration level, breaking ties in
-a fixed way. We use a direct adapted conditional-Haar fact. If $v_k$ is
-measurable with respect to an independent seed and columns
-$u_1,\ldots,u_{k-1}$, with $\|v_k\|\leq S$, then conditional on this history
-every remaining column has a uniform spherical marginal in a subspace of
-dimension at least $d-n+1$. The standard spherical-cap bound used by
-\citet[Appendix~B.3]{carmon2020stationary}, followed by a union bound, gives
-$|\langle u_j,v_k\rangle|<\tau$ simultaneously for all $k\leq j$ when
-\eqref{eq:dimension} holds.
+Draw $U$ uniformly from the Stiefel manifold of $d\times n$ orthonormal frames. Order its columns by nondecreasing filtration level, breaking ties in a fixed way. We use a direct adapted conditional-Haar fact. If $v_k$ is measurable with respect to an independent seed and columns $u_1,\ldots,u_{k-1}$, with $\|v_k\|\leq S$, then conditional on this history every remaining column has a uniform spherical marginal in a subspace of dimension at least $d-n+1$. The standard spherical-cap bound used by \citet[Appendix~B.3]{carmon2020stationary}, followed by a union bound, gives $|\langle u_j,v_k\rangle|<\tau$ simultaneously for all $k\leq j$ when \eqref{eq:dimension} holds.
 
 \begin{lemma}[Robust random rotation]
 \label{lem:rotation}
@@ -414,34 +195,12 @@ Fix a randomized algorithm and $\delta\in(0,1)$. If
  d\geq n+2S^2\tau^{-2}\log\frac{2n^2}{\delta},
  \label{eq:dimension}
 \end{equation}
-then, with probability at least $1-\delta$ over $U$ and the algorithm, every
-query $x_t$ before filtration level $H$ satisfies
-\[
- |\langle u_{m,j},s_S(x_t)\rangle|<\tau
- \quad\text{whenever }\ell(m,j)\geq t.
-\]
+then, with probability at least $1-\delta$ over $U$ and the algorithm, every query $x_t$ before filtration level $H$ satisfies \[ |\langle u_{m,j},s_S(x_t)\rangle|<\tau \quad\text{whenever }\ell(m,j)\geq t. \]
 \end{lemma}
 
-Here is the reduction to that geometric fact. Let $\pi(1),\ldots,\pi(n)$ be
-the column order and let $K_t=\{k:\ell(\pi(k))=t\}$. Define a surrogate
-transcript on every history by replacing $\bar f(y)$ with $\bar f(P_ty)$ in
-the wrapped oracle response at round $t$. Its effective query
-$\widetilde y_t=s_S(\widetilde x_t)$ is measurable from the random seed and
-columns in levels below $t$. For each $k\in K_t$, set
-$v_k=\widetilde y_t$, and pad unused later entries with zero. Reordering a
-Haar frame preserves its law. Moreover, $v_k$ does not use any column in its
-own layer, so the sequence is adapted even when a query is repeated across a
-width-six layer.
+Here is the reduction to that geometric fact. Let $\pi(1),\ldots,\pi(n)$ be the column order and let $K_t=\{k:\ell(\pi(k))=t\}$. Define a surrogate transcript on every history by replacing $\bar f(y)$ with $\bar f(P_ty)$ in the wrapped oracle response at round $t$. Its effective query $\widetilde y_t=s_S(\widetilde x_t)$ is measurable from the random seed and columns in levels below $t$. For each $k\in K_t$, set $v_k=\widetilde y_t$, and pad unused later entries with zero. Reordering a Haar frame preserves its law. Moreover, $v_k$ does not use any column in its own layer, so the sequence is adapted even when a query is repeated across a width-six layer.
 
-Apply the conditional-Haar fact to this virtual sequence. On its good event,
-suppose the surrogate and true transcripts agree through query $t$. Every
-coordinate of $U^\top s_S(x_t)$ at level at least $t$ then has magnitude below
-$\tau$. Proposition~\ref{prop:base}, with index $t-1$, says that $\bar f$
-agrees locally with $\bar f\circ P_t$. Thus their values and entire
-subdifferentials agree. The exact chain rule through $U^\top s_S$ makes the
-two wrapped oracle responses equal, and the next queries agree by induction.
-This proves the lemma. The supplement provides the full adapted-Haar statement
-and the measurability details.
+Apply the conditional-Haar fact to this virtual sequence. On its good event, suppose the surrogate and true transcripts agree through query $t$. Every coordinate of $U^\top s_S(x_t)$ at level at least $t$ then has magnitude below $\tau$. Proposition~\ref{prop:base}, with index $t-1$, says that $\bar f$ agrees locally with $\bar f\circ P_t$. Thus their values and entire subdifferentials agree. The exact chain rule through $U^\top s_S$ makes the two wrapped oracle responses equal, and the next queries agree by induction. This proves the lemma. The supplement provides the full adapted-Haar statement and the measurability details.
 
 We finish the construction. Let
 \begin{align*}
@@ -450,59 +209,26 @@ We finish the construction. Let
  N&=\left\lfloor\frac{\kappa^2G^2}{\ve^2}\right\rfloor,
  \qquad M=\left\lfloor\frac{Nr}{12}\right\rfloor.
 \end{align*}
-Under the accuracy assumption of Theorem~\ref{thm:main}, these integers are
-admissible. Scale the wrapper as
+Under the accuracy assumption of Theorem~\ref{thm:main}, these integers are admissible. Scale the wrapper as
 \begin{equation}
  F_U(x)=\frac{G^2}{\rho}
  H_U\left(\frac{\rho}{G}x\right).
  \label{eq:scaling}
 \end{equation}
-Then $F_U\in\cF(G,\rho,\Delta)$ and
-\[
- \|\nabla(F_U)_{1/(2\rho)}(x)\|
- =G\left\|\nabla(H_U)_{1/2}
- \left(\frac{\rho}{G}x\right)\right\|.
-\]
+Then $F_U\in\cF(G,\rho,\Delta)$ and \[ \|\nabla(F_U)_{1/(2\rho)}(x)\| =G\left\|\nabla(H_U)_{1/2} \left(\frac{\rho}{G}x\right)\right\|. \]
 
-Set $H=(M-1)L+\lfloor N/2\rfloor$. We have $H\geq MN/120$. Apply
-Lemma~\ref{lem:rotation} to the induced algorithm whose wrapper query is
-$\rho x/G$. Index its oracle calls as $x_0,\ldots,x_{T-1}$, and append its
-transcript-measurable output as $x_T$. If $T<H$, the output round is still
-before level $H$. Lemma~\ref{lem:rotation} and
-Proposition~\ref{prop:wrapper} therefore show that the output is not
-$\ve$-stationary with probability at least $1-\delta$. Set $\delta=1/4$.
-Averaging over $U$ gives a fixed $U$ on which the algorithm succeeds with
-probability at most $1/4$, which is strictly below the required $1/2$. Using
-$N=\Omega(G^2/\ve^2)$ and $M=\Omega(Nr)$ proves
-Theorem~\ref{thm:main}.
+Set $H=(M-1)L+\lfloor N/2\rfloor$. We have $H\geq MN/120$. Apply Lemma~\ref{lem:rotation} to the induced algorithm whose wrapper query is $\rho x/G$. Index its oracle calls as $x_0,\ldots,x_{T-1}$, and append its transcript-measurable output as $x_T$. If $T<H$, the output round is still before level $H$. Lemma~\ref{lem:rotation} and Proposition~\ref{prop:wrapper} therefore show that the output is not $\ve$-stationary with probability at least $1-\delta$. Set $\delta=1/4$. Averaging over $U$ gives a fixed $U$ on which the algorithm succeeds with probability at most $1/4$, which is strictly below the required $1/2$. Using $N=\Omega(G^2/\ve^2)$ and $M=\Omega(Nr)$ proves Theorem~\ref{thm:main}.
 
-The dimension in \eqref{eq:dimension} is
-$O(MN^4\log(MN))$, and hence polynomial in the inverse accuracy. We have not
-optimized numerical constants.
+The dimension in \eqref{eq:dimension} is $O(MN^4\log(MN))$, and hence polynomial in the inverse accuracy. We have not optimized numerical constants.
 
 \section{Discussion}
 \label{sec:discussion}
 
-Theorem~\ref{thm:main} removes randomization as a possible explanation for
-the fourth-power complexity of weakly convex optimization. The obstruction
-persists under a full-subdifferential oracle, so it does not arise from an
-adversarial choice of one subgradient. In the small-gap regime, the existing
-upper bound makes the nonsmooth penalty in \eqref{eq:minimax-rate} minimax
-exact up to numerical constants.
+Theorem~\ref{thm:main} removes randomization as a possible explanation for the fourth-power complexity of weakly convex optimization. The obstruction persists under a full-subdifferential oracle, so it does not arise from an adversarial choice of one subgradient. In the small-gap regime, the existing upper bound makes the nonsmooth penalty in \eqref{eq:minimax-rate} minimax exact up to numerical constants.
 
-Three qualifications are important. First, the construction uses a high but
-polynomial dimension. Dimension-sensitive rates remain open. Second, the
-oracle is local and first order. A proximal oracle can reveal global
-information and supports faster rates for structured subclasses. Third, the
-dead zone is essential for a full-set oracle. Random rotation alone gives only
-small hidden projections, while any nonzero progress derivative would encode
-an unrevealed column exactly.
+Three qualifications are important. First, the construction uses a high but polynomial dimension. Dimension-sensitive rates remain open. Second, the oracle is local and first order. A proximal oracle can reveal global information and supports faster rates for structured subclasses. Third, the dead zone is essential for a full-set oracle. Random rotation alone gives only small hidden projections, while any nonzero progress derivative would encode an unrevealed column exactly.
 
-The wrapper may be useful beyond this problem. Smooth lower bounds can use a
-quadratic radial penalty because global function Lipschitzness is absent. The
-linear-growth penalty in \eqref{eq:wrapper} retains the same information
-shield while respecting a global Lipschitz budget. Its noncancellation proof
-uses a sign-and-support certificate rather than smooth gradient geometry.
+The wrapper may be useful beyond this problem. Smooth lower bounds can use a quadratic radial penalty because global function Lipschitzness is absent. The linear-growth penalty in \eqref{eq:wrapper} retains the same information shield while respecting a global Lipschitz budget. Its noncancellation proof uses a sign-and-support certificate rather than smooth gradient geometry.
 
 \bibliography{references}
 
